@@ -1,0 +1,64 @@
+{% extends 'catalogo/base.html' %}
+{% block title %}
+Produtos
+{% endblock %} 
+{% block content %}
+<div>
+  <h3>Categorias</h3>
+  <div>
+    <a href="{% url 'produto:lista' %}">Todas</a>
+    {% for c in categorias %}
+    <a href="{% url 'produto:por_categoria' c.slug %}"
+      >{{ c.nome }}</a
+    >
+    {% empty %}
+    <span>Sem categorias</span>
+    {% endfor %}
+  </div>
+</div>
+<section>
+    <div>
+        <form>
+            <div>
+                <input type="text" name="q" value="{{ q }}" placeholder="Buscar produtos por nome/descrição...">
+                <button>Buscar</button>
+            </div>
+            <div>
+                <label>Ordenar:</label>
+                    <select name="sort" onchange="this.form.submit()">
+                        <option value="recentes" {% if sort == 'recentes' %}selected {% endif %}>Mais recentes</option>
+                        <option value="preco_asc" {% if sort == 'preco_asc' %}selected {% endif %}>Preço menor para maior</option>
+                        <option value="preco_desc" {% if sort == 'preco_desc' %}selected {% endif %}>Preço maior para menor</option>
+                    </select>
+            </div>
+        </form>
+    </div>
+    <div>
+        {% for item in page_obj.object_list %}
+        <div>
+            <div>{{ item.categoria.nome }}</div>
+                <h3>
+                    <a href="#">{{ item.nome }}</a>
+                        </h3>
+                        <p>{{ item.descricao }}</p>
+                        <div>R$ {{ item.preco }}</div>
+                    </div>
+                {% empty %}
+                    <div>
+                        <strong>Nada encontrado.</strong>
+                    </div>
+                {% endfor %}
+            </div>
+            {% if page_obj.has_other_pages %}
+                <div>
+                    {% if page_obj.has_previous_page %}
+                        <a href="?q={{ q }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+                    {% endif %}
+                    <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                    {% if page_obj.has_next %}
+                        <a href="?q={{ q }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">Próxima</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
+{% endblock %}
